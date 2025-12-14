@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, ArrowRight, BookOpen, Brain, Move } from 'lucide-react';
 import { QuizCategory, MasterTestQuestion, GapFillItem } from '../types';
+import { audio } from '../utils/audio';
 
 export const QuizIntro: React.FC<{ category: QuizCategory }> = ({ category }) => (
   <div className="flex flex-col items-center justify-center h-full text-center space-y-12 max-w-5xl mx-auto">
@@ -49,15 +50,22 @@ export const MasterTestRunner: React.FC<{ questions: MasterTestQuestion[], title
   const handleSelect = (opt: string) => {
     if (selected) return;
     setSelected(opt);
-    if (opt === question.answer) setScore(s => s + 1);
+    if (opt === question.answer) {
+        setScore(s => s + 1);
+        audio.playSuccess();
+    } else {
+        audio.playError();
+    }
   };
 
   const next = () => {
+    audio.playClick();
     if (currentQ < questions.length - 1) {
       setCurrentQ(c => c + 1);
       setSelected(null);
     } else {
       setIsFinished(true);
+      audio.playSuccess(); // Fanfare for finishing
     }
   };
 
@@ -72,7 +80,7 @@ export const MasterTestRunner: React.FC<{ questions: MasterTestQuestion[], title
           You scored <span className="font-bold text-emerald-600">{score}</span> / {questions.length}
         </p>
         <button 
-          onClick={() => { setIsFinished(false); setCurrentQ(0); setScore(0); setSelected(null); }}
+          onClick={() => { setIsFinished(false); setCurrentQ(0); setScore(0); setSelected(null); audio.playClick(); }}
           className="px-8 py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors"
         >
           Try Again
@@ -169,6 +177,7 @@ export const GapFillSession: React.FC<{ title: string, items: GapFillItem[] }> =
   const handleDragStart = (e: React.DragEvent, word: string) => {
     e.dataTransfer.setData('text/plain', word);
     e.dataTransfer.effectAllowed = 'move';
+    audio.playPop();
   };
 
   const handleDrop = (e: React.DragEvent, index: number) => {
@@ -181,6 +190,12 @@ export const GapFillSession: React.FC<{ title: string, items: GapFillItem[] }> =
       const correct = items[index].answer;
       const isCorrect = word.toLowerCase().trim() === correct.toLowerCase().trim();
       setResults(prev => ({ ...prev, [index]: isCorrect }));
+
+      if (isCorrect) {
+          audio.playSuccess();
+      } else {
+          audio.playError();
+      }
     }
   };
 
@@ -200,6 +215,7 @@ export const GapFillSession: React.FC<{ title: string, items: GapFillItem[] }> =
       delete next[index];
       return next;
     });
+    audio.playPop();
   };
 
   return (

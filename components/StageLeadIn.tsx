@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Coffee, Volume2, HelpCircle, Mic, MessageCircle, CheckCircle, XCircle } from 'lucide-react';
 import { VocabItem, VocabQuizItem } from '../types';
 import TranslationReveal from './TranslationReveal';
+import { audio } from '../utils/audio';
 
 export const LeadInIntro: React.FC = () => (
   <div className="flex flex-col items-center justify-center h-full text-center space-y-12">
@@ -40,10 +40,15 @@ export const VocabCard: React.FC<{ item: VocabItem }> = ({ item }) => (
       <h2 className="text-8xl md:text-9xl font-black text-stone-900 dark:text-white font-serif">
         {item.word}
       </h2>
-      <div className="flex items-center justify-center gap-4 text-stone-500 dark:text-stone-400">
-        <Volume2 size={40} className="text-emerald-500" />
+      <button 
+        onClick={() => audio.speak(item.word)}
+        className="flex items-center justify-center gap-4 text-stone-500 dark:text-stone-400 hover:text-emerald-500 transition-colors group cursor-pointer"
+      >
+        <div className="p-3 rounded-full bg-stone-200 dark:bg-stone-800 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900 transition-colors">
+            <Volume2 size={40} className="text-emerald-500" />
+        </div>
         <span className="text-4xl font-mono tracking-widest">{item.pronunciation}</span>
-      </div>
+      </button>
     </div>
     
     <div className="space-y-4 w-full flex flex-col items-center">
@@ -65,6 +70,15 @@ export const VocabCard: React.FC<{ item: VocabItem }> = ({ item }) => (
 export const VocabQuiz: React.FC<{ quiz: VocabQuizItem }> = ({ quiz }) => {
   const [selected, setSelected] = useState<string | null>(null);
   const isCorrect = selected === quiz.answer;
+
+  const handleSelect = (opt: string) => {
+    setSelected(opt);
+    if (opt === quiz.answer) {
+        audio.playSuccess();
+    } else {
+        audio.playError();
+    }
+  };
 
   const parts = quiz.question.split("___");
 
@@ -93,7 +107,7 @@ export const VocabQuiz: React.FC<{ quiz: VocabQuizItem }> = ({ quiz }) => {
         {quiz.options.map((opt) => (
           <button
             key={opt}
-            onClick={() => setSelected(opt)}
+            onClick={() => handleSelect(opt)}
             className={`p-6 text-2xl md:text-3xl font-bold rounded-2xl border-4 transition-all duration-300 transform active:scale-95
               ${selected === opt 
                 ? (opt === quiz.answer 
@@ -110,8 +124,8 @@ export const VocabQuiz: React.FC<{ quiz: VocabQuizItem }> = ({ quiz }) => {
       <AnimatePresence>
         {selected && (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20, scale: 0.5 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             className={`flex items-center gap-4 text-3xl font-bold ${isCorrect ? 'text-emerald-600' : 'text-red-500'}`}
           >
             {isCorrect ? <CheckCircle size={40} /> : <XCircle size={40} />}

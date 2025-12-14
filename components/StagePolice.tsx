@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Check, X } from 'lucide-react';
 import { PoliceItem } from '../types';
+import { audio } from '../utils/audio';
 
 export const PoliceIntro: React.FC = () => (
   <div className="flex flex-col items-center justify-center h-full text-center space-y-12">
@@ -29,7 +30,16 @@ export const PoliceQuestion: React.FC<PoliceQuestionProps> = ({ item, value, onC
   const check = () => {
     const correct = item.answer.toLowerCase();
     const userVal = value.trim().toLowerCase();
-    setIsCorrect(userVal === correct);
+    const result = userVal === correct;
+    setIsCorrect(result);
+    
+    if (userVal.length > 0) {
+        if (result) {
+            audio.playSuccess();
+        } else {
+            audio.playError();
+        }
+    }
   };
 
   return (

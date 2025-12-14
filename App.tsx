@@ -6,6 +6,7 @@ import ProgressBar from './components/ProgressBar';
 import LandingPage from './components/LandingPage';
 import NavigationMenu from './components/NavigationMenu';
 import ScreenAdapter from './components/ScreenAdapter';
+import { audio } from './utils/audio';
 
 import { LeadInIntro, VocabCard, VocabQuiz, SpeakingPrompt } from './components/StageLeadIn';
 import StageGossip from './components/StageGossip';
@@ -16,35 +17,40 @@ import { QuizIntro, MasterTestRunner, GapFillSession } from './components/StageQ
 
 import { VOCAB_DATA, POLICE_DATA, ROLES, GRAMMAR_RULES, QUIZ_CATEGORIES } from './constants';
 
-// --- ANIMATION VARIANTS ---
+// --- IMPROVED ANIMATION VARIANTS ---
 const pageVariants = {
   initial: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
-    scale: 0.8,
+    scale: 0.9,
     opacity: 0,
+    filter: 'blur(10px)',
     zIndex: 0
   }),
   animate: {
     x: 0,
     scale: 1,
     opacity: 1,
+    filter: 'blur(0px)',
     zIndex: 1,
     transition: {
       type: "spring",
-      stiffness: 100,
-      damping: 20,
+      stiffness: 80,
+      damping: 15,
       mass: 1,
+      duration: 0.6
     }
   },
   exit: (direction: number) => ({
     x: direction < 0 ? '100%' : '-100%',
-    scale: 0.8,
+    scale: 0.9,
     opacity: 0,
+    filter: 'blur(10px)',
     zIndex: 0,
     transition: {
       type: "spring",
-      stiffness: 100,
-      damping: 20
+      stiffness: 80,
+      damping: 15,
+      duration: 0.6
     }
   })
 };
@@ -54,7 +60,7 @@ const contentVariants = {
   visible: { 
     y: 0, 
     opacity: 1,
-    transition: { type: "spring", stiffness: 50 }
+    transition: { type: "spring", stiffness: 50, delay: 0.2 }
   }
 };
 
@@ -152,6 +158,7 @@ export default function App() {
   ];
 
   const changeSlide = (newIndex: number) => {
+    audio.playClick();
     setDirection(newIndex > currentSlide ? 1 : -1);
     setCurrentSlide(newIndex);
   };
@@ -167,7 +174,7 @@ export default function App() {
         <header className="absolute top-0 left-0 right-0 p-4 md:p-6 z-50 flex justify-between items-center pointer-events-none">
           <div className="pointer-events-auto flex items-center gap-4">
             <button 
-              onClick={() => setIsMenuOpen(true)}
+              onClick={() => { setIsMenuOpen(true); audio.playClick(); }}
               className="p-3 bg-stone-200 dark:bg-stone-800 rounded-full hover:scale-110 transition-transform shadow-lg border border-stone-300 dark:border-stone-700"
             >
               <Menu size={24} />
@@ -177,7 +184,7 @@ export default function App() {
             </div>
           </div>
           <div className="pointer-events-auto">
-             <ThemeToggle isDark={isDark} toggle={() => setIsDark(!isDark)} />
+             <ThemeToggle isDark={isDark} toggle={() => { setIsDark(!isDark); audio.playClick(); }} />
           </div>
         </header>
 
