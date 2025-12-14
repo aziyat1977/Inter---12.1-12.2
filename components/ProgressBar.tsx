@@ -8,19 +8,18 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
   return (
-    <div className="flex items-center justify-center space-x-2 mb-8">
+    <div className="flex gap-1">
       {[...Array(total)].map((_, i) => (
         <motion.div
           key={i}
           initial={false}
           animate={{
-            height: current === i ? 8 : 8,
-            width: current === i ? 40 : 12,
-            opacity: i <= current ? 1 : 0.3,
-            backgroundColor: i <= current ? '#10b981' : '#78716c', // emerald-500 vs stone-500
+            height: 6,
+            width: current === i ? 24 : 6,
+            opacity: i <= current ? 1 : 0.2,
+            backgroundColor: i <= current ? '#10b981' : 'currentColor',
           }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="rounded-full"
+          className="rounded-full bg-stone-900 dark:bg-stone-100 transition-all duration-300"
         />
       ))}
     </div>

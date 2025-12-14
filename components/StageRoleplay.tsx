@@ -1,7 +1,7 @@
 import React from 'react';
+import { User, Glasses, Mic, HelpCircle, Users } from 'lucide-react';
+import { RoleItem } from '../types';
 import { motion } from 'framer-motion';
-import { Users, User, Glasses, Mic, HelpCircle } from 'lucide-react';
-import { ROLES } from '../constants';
 
 const icons = {
   sales: User,
@@ -9,46 +9,58 @@ const icons = {
   spy: Mic
 };
 
-const StageRoleplay: React.FC = () => {
-  return (
-    <div className="space-y-12">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-stone-900 dark:text-stone-50 mb-4">Final Challenge: The Salesman</h2>
-        <p className="text-stone-600 dark:text-stone-400">Get into groups of 3. Choose your character.</p>
-      </div>
-      
-      <div className="grid md:grid-cols-3 gap-6">
-        {ROLES.map((role, idx) => {
-          const Icon = icons[role.iconType];
-          return (
-            <motion.div 
-              key={idx}
-              whileHover={{ y: -10 }}
-              className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xl flex flex-col items-center text-center group"
-            >
-              <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-2xl flex items-center justify-center mb-6 text-stone-700 dark:text-stone-300 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors duration-300">
-                <Icon size={32} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-stone-900 dark:text-stone-50">{role.title}</h3>
-              <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{role.desc}</p>
-            </motion.div>
-          );
-        })}
-      </div>
+export const RoleplayIntro: React.FC = () => (
+  <div className="flex flex-col items-center justify-center h-full text-center space-y-12">
+    <div className="p-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full">
+      <Users size={100} />
+    </div>
+    <h1 className="text-6xl md:text-8xl font-black text-stone-900 dark:text-white font-serif">
+      Final Challenge
+    </h1>
+    <p className="text-4xl md:text-6xl text-stone-600 dark:text-stone-300 font-medium">
+      Get into groups of 3.
+    </p>
+  </div>
+);
 
-      <div className="max-w-2xl mx-auto bg-amber-50 dark:bg-amber-900/20 p-6 rounded-2xl border border-amber-200 dark:border-amber-900/40 flex gap-4 items-start">
-        <HelpCircle className="text-amber-600 dark:text-amber-400 shrink-0 mt-1" />
-        <div>
-          <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-2">Teacher's Tip</h4>
-          <p className="text-amber-800 dark:text-amber-300/80 text-sm">
-            Rotate roles every 3 minutes. <br/>
-            The <strong>Spy</strong> must report back to the class using the target language: <br/>
-            <span className="font-mono bg-amber-100 dark:bg-amber-900/50 px-1 rounded mt-1 inline-block">"He asked if..."</span> and <span className="font-mono bg-amber-100 dark:bg-amber-900/50 px-1 rounded mt-1 inline-block">"He said he would..."</span>
-          </p>
-        </div>
+export const RoleCard: React.FC<{ role: RoleItem }> = ({ role }) => {
+  const Icon = icons[role.iconType];
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-10 max-w-4xl mx-auto">
+      <div className="p-8 bg-stone-100 dark:bg-stone-800 rounded-3xl shadow-xl">
+        <Icon size={80} className="text-stone-800 dark:text-stone-200" />
+      </div>
+      <h2 className="text-6xl md:text-8xl font-bold text-stone-900 dark:text-white font-serif">
+        {role.title}
+      </h2>
+      <div className="bg-white dark:bg-stone-900 p-10 rounded-3xl border-2 border-stone-200 dark:border-stone-700 shadow-2xl">
+        <p className="text-3xl md:text-5xl text-stone-600 dark:text-stone-300 leading-relaxed">
+          {role.desc}
+        </p>
       </div>
     </div>
   );
 };
 
-export default StageRoleplay;
+export const TeacherTip: React.FC = () => (
+  <div className="flex flex-col items-center justify-center h-full text-center space-y-12 max-w-5xl mx-auto">
+    <div className="flex items-center gap-6 text-amber-600 dark:text-amber-400">
+      <HelpCircle size={80} />
+      <h2 className="text-5xl md:text-7xl font-bold uppercase tracking-widest">Teacher's Tip</h2>
+    </div>
+    
+    <div className="bg-amber-50 dark:bg-amber-900/20 p-12 rounded-[3rem] border-4 border-amber-200 dark:border-amber-800 space-y-8">
+      <p className="text-3xl md:text-5xl text-stone-800 dark:text-amber-100 leading-relaxed">
+        The <strong className="text-amber-700 dark:text-amber-400">Spy</strong> must report back using:
+      </p>
+      <div className="flex flex-col gap-6">
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl shadow-lg transform -rotate-1">
+          <code className="text-4xl md:text-6xl font-mono text-emerald-600 dark:text-emerald-400 font-bold">"He asked if..."</code>
+        </div>
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl shadow-lg transform rotate-1">
+          <code className="text-4xl md:text-6xl font-mono text-emerald-600 dark:text-emerald-400 font-bold">"He said he would..."</code>
+        </div>
+      </div>
+    </div>
+  </div>
+);

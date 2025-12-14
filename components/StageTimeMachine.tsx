@@ -1,107 +1,72 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Clock, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { Clock, ArrowLeft, ArrowRight, AlertTriangle } from 'lucide-react';
 
-const StageTimeMachine: React.FC = () => {
-  return (
-    <div className="space-y-12">
-      <div className="text-center space-y-4">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="w-16 h-16 bg-stone-900 dark:bg-stone-100 rounded-2xl rotate-3 mx-auto flex items-center justify-center text-stone-100 dark:text-stone-900 mb-4 shadow-xl"
-        >
-          <Clock size={32} />
-        </motion.div>
-        <h2 className="text-3xl font-bold text-stone-900 dark:text-stone-50">The Backshift Rule</h2>
-        <p className="text-stone-600 dark:text-stone-400 max-w-lg mx-auto">
-          English grammar is dramatic. When we report what someone said in the past, we must step back in time.
-        </p>
+export const RuleIntro: React.FC = () => (
+  <div className="flex flex-col items-center justify-center h-full text-center space-y-10">
+    <motion.div 
+      animate={{ rotate: 360 }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      className="text-stone-900 dark:text-stone-100"
+    >
+      <Clock size={120} strokeWidth={1} />
+    </motion.div>
+    <h2 className="text-6xl md:text-8xl font-bold text-stone-900 dark:text-white font-serif">The Backshift Rule</h2>
+    <p className="text-3xl md:text-5xl text-stone-600 dark:text-stone-300 max-w-5xl leading-tight">
+      English grammar is dramatic. When we report the past, we must <span className="text-emerald-600 dark:text-emerald-400 font-bold underline decoration-4 underline-offset-8">step back in time</span>.
+    </p>
+  </div>
+);
+
+export const TimelineView: React.FC = () => (
+  <div className="flex flex-col items-center justify-center h-full w-full">
+    <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 w-full max-w-7xl">
+      
+      {/* Present */}
+      <div className="flex-1 p-12 rounded-3xl bg-stone-200 dark:bg-stone-800 opacity-50 text-center space-y-6">
+        <h3 className="text-3xl font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">The Present</h3>
+        <p className="text-5xl md:text-6xl font-serif text-stone-400 dark:text-stone-500">do / is</p>
       </div>
 
-      <div className="relative bg-stone-900 dark:bg-black rounded-3xl p-8 md:p-12 overflow-hidden shadow-2xl border border-stone-800">
-        {/* Background Grid */}
-        <div className="absolute inset-0 opacity-20" 
-             style={{ backgroundImage: 'linear-gradient(stone 1px, transparent 1px), linear-gradient(90deg, stone 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
-        </div>
-
-        {/* Timeline Line */}
-        <div className="absolute top-1/2 left-0 right-0 h-1 bg-stone-700/50 -translate-y-1/2 z-0"></div>
-
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center items-center">
-          
-          {/* Past Perfect */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="space-y-3 opacity-60"
-          >
-            <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.2em]">Deep Past</h3>
-            <div className="bg-stone-800/80 backdrop-blur border border-stone-700 p-4 rounded-xl">
-              <span className="block text-stone-300 font-serif text-lg">Past Perfect</span>
-              <span className="text-stone-500 text-sm">had done</span>
-            </div>
-          </motion.div>
-
-          {/* Past Simple (Target) */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, type: "spring" }}
-            className="space-y-4"
-          >
-             <div className="flex justify-center items-center gap-2 text-emerald-400 font-bold uppercase text-xs tracking-widest">
-               <ArrowLeft size={14} /> One Step Back
-             </div>
-            <div className="bg-emerald-600 p-6 rounded-2xl border-4 border-emerald-500/30 text-white shadow-[0_0_30px_rgba(16,185,129,0.3)] transform scale-105">
-              <span className="block font-serif text-2xl font-bold">Past Simple</span>
-              <span className="text-emerald-100 text-sm mt-1 block">did / was / knew</span>
-            </div>
-          </motion.div>
-
-          {/* Present Simple (Source) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="space-y-3 opacity-60"
-          >
-            <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.2em]">The Present</h3>
-            <div className="bg-stone-800/80 backdrop-blur border border-stone-700 p-4 rounded-xl">
-              <span className="block text-stone-300 font-serif text-lg">Present Simple</span>
-              <span className="text-stone-500 text-sm">do / is / know</span>
-            </div>
-          </motion.div>
-
-        </div>
+      <div className="flex flex-col items-center gap-4 text-emerald-500 animate-pulse">
+        <ArrowLeft size={64} />
+        <span className="text-2xl font-bold uppercase tracking-widest whitespace-nowrap">One Step Back</span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-2xl border border-red-100 dark:border-red-900/50 flex gap-4">
-          <AlertTriangle className="text-red-500 shrink-0" />
-          <div>
-            <h4 className="font-bold text-red-800 dark:text-red-300 mb-1">Common Mistake</h4>
-            <p className="text-red-700/80 dark:text-red-400/80 text-sm">
-              "He said he <span className="underline decoration-wavy decoration-red-400">is</span> looking."
-            </p>
-            <p className="text-xs text-red-600/60 dark:text-red-500/60 mt-2">Do not keep the tense the same.</p>
-          </div>
-        </div>
-        
-        <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-900/50 flex gap-4">
-          <Clock className="text-emerald-500 shrink-0" />
-          <div>
-            <h4 className="font-bold text-emerald-800 dark:text-emerald-300 mb-1">Correct Usage</h4>
-            <p className="text-emerald-700/80 dark:text-emerald-400/80 text-sm">
-              "He said he <span className="font-bold bg-emerald-200 dark:bg-emerald-800 px-1 rounded">was</span> looking."
-            </p>
-            <p className="text-xs text-emerald-600/60 dark:text-emerald-500/60 mt-2">Move the verb one step into the past.</p>
-          </div>
-        </div>
+      {/* Past */}
+      <div className="flex-1 p-16 rounded-3xl bg-emerald-600 text-white shadow-2xl text-center space-y-6 transform scale-110">
+        <h3 className="text-3xl font-bold uppercase tracking-widest text-emerald-200">The Past</h3>
+        <p className="text-6xl md:text-8xl font-serif font-bold">did / was</p>
       </div>
+
     </div>
-  );
-};
+  </div>
+);
 
-export default StageTimeMachine;
+export const MistakeView: React.FC = () => (
+  <div className="flex flex-col items-center justify-center h-full space-y-12 w-full max-w-6xl mx-auto">
+    <div className="w-full bg-red-100 dark:bg-red-900/30 p-12 rounded-3xl border-4 border-red-200 dark:border-red-800 flex flex-col items-center text-center gap-6">
+      <div className="flex items-center gap-4 text-red-600 dark:text-red-400">
+        <AlertTriangle size={64} />
+        <span className="text-4xl font-bold uppercase">Don't do this</span>
+      </div>
+      <p className="text-4xl md:text-6xl text-stone-800 dark:text-stone-200">
+        "He said he <span className="underline decoration-wavy decoration-red-500 font-bold">is</span> looking."
+      </p>
+    </div>
+
+    <ArrowRight size={64} className="text-stone-400 rotate-90 md:rotate-0" />
+
+    <div className="w-full bg-emerald-100 dark:bg-emerald-900/30 p-12 rounded-3xl border-4 border-emerald-200 dark:border-emerald-800 flex flex-col items-center text-center gap-6">
+      <div className="flex items-center gap-4 text-emerald-600 dark:text-emerald-400">
+        <div className="bg-emerald-500 text-white rounded-full p-2">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span className="text-4xl font-bold uppercase">Do this</span>
+      </div>
+      <p className="text-4xl md:text-6xl text-stone-800 dark:text-stone-200">
+        "He said he <span className="bg-emerald-500 text-white px-4 py-1 rounded-xl font-bold shadow-lg">was</span> looking."
+      </p>
+    </div>
+  </div>
+);
