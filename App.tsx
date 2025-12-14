@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Menu, Home, BookOpen, Clock, Shield, Users, RefreshCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Menu, Home, BookOpen, Clock, Shield, Users, RefreshCcw, GraduationCap } from 'lucide-react';
 import ThemeToggle from './components/ThemeToggle';
 import ProgressBar from './components/ProgressBar';
 import LandingPage from './components/LandingPage';
@@ -10,8 +10,9 @@ import { LeadInIntro, VocabCard, VocabQuiz, SpeakingPrompt } from './components/
 import { RuleIntro, TimelineView, MistakeView, GrammarRuleTitle, GrammarExample } from './components/StageTimeMachine';
 import { PoliceIntro, PoliceQuestion } from './components/StagePolice';
 import { RoleplayIntro, RoleCard, TeacherTip } from './components/StageRoleplay';
+import { QuizIntro, MasterTestRunner, GapFillSession } from './components/StageQuizzes';
 
-import { VOCAB_DATA, POLICE_DATA, ROLES, GRAMMAR_RULES } from './constants';
+import { VOCAB_DATA, POLICE_DATA, ROLES, GRAMMAR_RULES, QUIZ_CATEGORIES } from './constants';
 
 // --- ANIMATION VARIANTS (200% Impact) ---
 const pageVariants = {
@@ -103,6 +104,16 @@ export default function App() {
     }))
   ]);
 
+  // Generate Master Quiz Slides (Intro -> TestRunner -> ExA -> ExB -> ExC)
+  const quizSlides = QUIZ_CATEGORIES.flatMap((cat, i) => [
+    { id: `quiz-intro-${i}`, content: wrap(<QuizIntro category={cat} />) },
+    { id: `quiz-test-${i}`, content: wrap(<MasterTestRunner questions={cat.test} title={`${cat.title} - Test`} />) },
+    ...cat.exercises.map((ex, j) => ({
+      id: `quiz-ex-${i}-${j}`,
+      content: wrap(<GapFillSession title={ex.title} items={ex.items} />)
+    }))
+  ]);
+
   // Combine all slides
   const slides = [
     { id: 'landing', content: <LandingPage /> }, // 0
@@ -111,7 +122,7 @@ export default function App() {
     { id: 'rules-intro', content: wrap(<RuleIntro />) }, // 20
     { id: 'rules-timeline', content: wrap(<TimelineView />) }, // 21
     { id: 'rules-mistake', content: wrap(<MistakeView />) }, // 22
-    ...grammarSlides, // 23 - 34 (3 rules * 4 slides each = 12 slides)
+    ...grammarSlides, // 23 - 34
     { id: 'police-intro', content: wrap(<PoliceIntro />) }, // 35
     ...POLICE_DATA.map((item, i) => ({
       id: `police-${i}`,
@@ -125,7 +136,8 @@ export default function App() {
     })),
     { id: 'role-intro', content: wrap(<RoleplayIntro />) }, // 42
     ...ROLES.map((role, i) => ({ id: `role-${i}`, content: wrap(<RoleCard role={role} />) })),
-    { id: 'role-tip', content: wrap(<TeacherTip />) }
+    { id: 'role-tip', content: wrap(<TeacherTip />) }, // 45
+    ...quizSlides // 46+
   ];
 
   // --- MENU SECTIONS ---
@@ -136,6 +148,7 @@ export default function App() {
     { title: 'The Rules', index: 20, icon: <Clock size={24} /> },
     { title: 'Police Report', index: 35, icon: <Shield size={24} /> },
     { title: 'Roleplay', index: 42, icon: <Users size={24} /> },
+    { title: 'Master Quizzes', index: 46, icon: <GraduationCap size={24} /> },
   ];
 
   const changeSlide = (newIndex: number) => {

@@ -47,3 +47,34 @@ export interface StageProps {
   isActive: boolean;
   onComplete?: () => void;
 }
+
+// --- NEW QUIZ TYPES ---
+
+export interface MasterTestQuestion {
+  question: string; // The prompt text e.g. "I sleep until noon" -> He said he ____ until noon.
+  options: string[];
+  answer: string;
+}
+
+export interface GapFillItem {
+  direct: string;
+  start: string;
+  answer: string; // correct value
+  end?: string; // optional suffix
+}
+
+export interface QuizCategory {
+  title: string;
+  context: string;
+  grammarInfo: {
+    rule: string;
+    form: string;
+    exampleDirect: string;
+    exampleReported: string;
+  };
+  test: MasterTestQuestion[];
+  exercises: {
+    title: string;
+    items: GapFillItem[];
+  }[];
+}
