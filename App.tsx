@@ -5,6 +5,7 @@ import ThemeToggle from './components/ThemeToggle';
 import ProgressBar from './components/ProgressBar';
 import LandingPage from './components/LandingPage';
 import NavigationMenu from './components/NavigationMenu';
+import ScreenAdapter from './components/ScreenAdapter';
 
 import { LeadInIntro, VocabCard, VocabQuiz, SpeakingPrompt } from './components/StageLeadIn';
 import StageGossip from './components/StageGossip';
@@ -19,31 +20,26 @@ import { VOCAB_DATA, POLICE_DATA, ROLES, GRAMMAR_RULES, QUIZ_CATEGORIES } from '
 const pageVariants = {
   initial: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
-    scale: 0.5,
+    scale: 0.8,
     opacity: 0,
-    rotateY: direction > 0 ? 45 : -45,
     zIndex: 0
   }),
   animate: {
     x: 0,
     scale: 1,
     opacity: 1,
-    rotateY: 0,
     zIndex: 1,
     transition: {
       type: "spring",
       stiffness: 100,
       damping: 20,
       mass: 1,
-      staggerChildren: 0.1,
-      delayChildren: 0.2
     }
   },
   exit: (direction: number) => ({
     x: direction < 0 ? '100%' : '-100%',
-    scale: 0.5,
+    scale: 0.8,
     opacity: 0,
-    rotateY: direction < 0 ? 45 : -45,
     zIndex: 0,
     transition: {
       type: "spring",
@@ -54,7 +50,7 @@ const pageVariants = {
 };
 
 const contentVariants = {
-  hidden: { y: 50, opacity: 0 },
+  hidden: { y: 20, opacity: 0 },
   visible: { 
     y: 0, 
     opacity: 1,
@@ -79,7 +75,7 @@ export default function App() {
       variants={contentVariants} 
       initial="hidden" 
       animate="visible"
-      className="w-full h-full"
+      className="w-full h-full flex flex-col justify-center"
     >
       {Component}
     </motion.div>
@@ -117,30 +113,17 @@ export default function App() {
     }))
   ]);
 
-  // --- ORDER OF SLIDES (LOGICAL OVERHAUL) ---
+  // --- ORDER OF SLIDES ---
   const slides = [
-    // 1. Landing
     { id: 'landing', content: <LandingPage /> }, 
-    
-    // 2. Lead In (Context)
     { id: 'leadin-intro', content: wrap(<LeadInIntro />) }, 
-    
-    // 3. Vocabulary (Pre-teaching)
     ...vocabSlides, 
-    
-    // 4. Exposure (The Gossip/Listening) - Reordered to be before rules
     { id: 'gossip', content: wrap(<StageGossip />) },
-
-    // 5. Clarification (The Rules)
     { id: 'rules-intro', content: wrap(<RuleIntro />) }, 
     { id: 'rules-timeline', content: wrap(<TimelineView />) }, 
     { id: 'rules-mistake', content: wrap(<MistakeView />) }, 
     ...grammarSlides, 
-
-    // 6. Restricted Practice (Quizzes/Drills)
     ...quizSlides,
-
-    // 7. Semi-Controlled Practice (Police Report - Writing)
     { id: 'police-intro', content: wrap(<PoliceIntro />) }, 
     ...POLICE_DATA.map((item, i) => ({
       id: `police-${i}`,
@@ -152,24 +135,18 @@ export default function App() {
         />
       )
     })),
-
-    // 8. Freer Practice (Roleplay)
     { id: 'role-intro', content: wrap(<RoleplayIntro />) }, 
     ...ROLES.map((role, i) => ({ id: `role-${i}`, content: wrap(<RoleCard role={role} />) })),
     { id: 'role-tip', content: wrap(<TeacherTip />) }, 
   ];
 
-  // --- MENU SECTIONS (Updated Indices) ---
-  // We need to calculate indices dynamically or hardcode based on the new order.
-  // Since arrays are dynamic, approximations or finding index by ID is safer, but for this XML response, I will map them logically.
-  
   const sections = [
     { title: 'Home', index: 0, icon: <Home size={24} /> },
     { title: 'Lead In', index: 1, icon: <BookOpen size={24} /> },
     { title: 'Vocabulary', index: 2, icon: <BookOpen size={24} /> },
     { title: 'The Gossip (Listening)', index: 2 + vocabSlides.length, icon: <Ear size={24} /> },
     { title: 'The Rules', index: 3 + vocabSlides.length, icon: <Clock size={24} /> },
-    { title: 'Practice Drills', index: 3 + vocabSlides.length + 3 + grammarSlides.length, icon: <GraduationCap size={24} /> }, // Intro+Timeline+Mistake = 3
+    { title: 'Practice Drills', index: 3 + vocabSlides.length + 3 + grammarSlides.length, icon: <GraduationCap size={24} /> },
     { title: 'Police Report', index: slides.findIndex(s => s.id === 'police-intro'), icon: <Shield size={24} /> },
     { title: 'Roleplay', index: slides.findIndex(s => s.id === 'role-intro'), icon: <Users size={24} /> },
   ];
@@ -183,79 +160,81 @@ export default function App() {
   const prevSlide = () => changeSlide(Math.max(currentSlide - 1, 0));
 
   return (
-    <div className="h-screen w-full bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors duration-500 overflow-hidden flex flex-col font-sans perspective-1000">
-      
-      {/* Top Bar */}
-      <header className="absolute top-0 left-0 right-0 p-6 z-50 flex justify-between items-center pointer-events-none">
-        <div className="pointer-events-auto flex items-center gap-4">
+    <ScreenAdapter>
+      <div className="w-full h-full flex flex-col font-sans overflow-hidden">
+        
+        {/* Top Bar */}
+        <header className="absolute top-0 left-0 right-0 p-4 md:p-6 z-50 flex justify-between items-center pointer-events-none">
+          <div className="pointer-events-auto flex items-center gap-4">
+            <button 
+              onClick={() => setIsMenuOpen(true)}
+              className="p-3 bg-stone-200 dark:bg-stone-800 rounded-full hover:scale-110 transition-transform shadow-lg border border-stone-300 dark:border-stone-700"
+            >
+              <Menu size={24} />
+            </button>
+            <div className="hidden md:block">
+              <ProgressBar current={currentSlide} total={slides.length} />
+            </div>
+          </div>
+          <div className="pointer-events-auto">
+             <ThemeToggle isDark={isDark} toggle={() => setIsDark(!isDark)} />
+          </div>
+        </header>
+
+        <NavigationMenu 
+          isOpen={isMenuOpen} 
+          onClose={() => setIsMenuOpen(false)}
+          onJumpTo={(idx) => changeSlide(idx)}
+          sections={sections}
+          currentIndex={currentSlide}
+        />
+
+        {/* Main Slide Stage */}
+        <main className="flex-1 relative w-full h-full">
+          <AnimatePresence initial={false} custom={direction} mode="popLayout">
+            <motion.div
+              key={currentSlide}
+              custom={direction}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute inset-0 p-6 md:p-12 flex flex-col justify-center items-center w-full h-full"
+            >
+              {slides[currentSlide].content}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+
+        {/* Footer Navigation */}
+        <footer className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-40 flex justify-between items-end pointer-events-none">
           <button 
-            onClick={() => setIsMenuOpen(true)}
-            className="p-3 bg-stone-200 dark:bg-stone-800 rounded-full hover:scale-110 transition-transform shadow-lg"
+            onClick={prevSlide}
+            disabled={currentSlide === 0}
+            className={`pointer-events-auto p-4 rounded-full transition-all duration-300 transform hover:scale-110 active:scale-95
+              ${currentSlide === 0 ? 'opacity-0 translate-y-10' : 'bg-stone-200/50 dark:bg-stone-800/50 hover:bg-stone-300 dark:hover:bg-stone-700 backdrop-blur-sm shadow-xl'}`}
           >
-            <Menu size={24} />
+            <ArrowLeft size={32} />
           </button>
-          <div className="hidden md:block">
-            <ProgressBar current={currentSlide} total={slides.length} />
-          </div>
-        </div>
-        <div className="pointer-events-auto">
-           <ThemeToggle isDark={isDark} toggle={() => setIsDark(!isDark)} />
-        </div>
-      </header>
 
-      <NavigationMenu 
-        isOpen={isMenuOpen} 
-        onClose={() => setIsMenuOpen(false)}
-        onJumpTo={(idx) => changeSlide(idx)}
-        sections={sections}
-        currentIndex={currentSlide}
-      />
-
-      {/* Main Slide Stage */}
-      <main className="flex-1 relative flex items-center justify-center p-6 md:p-12 perspective-[2000px]">
-        <AnimatePresence initial={false} custom={direction} mode="popLayout">
-          <motion.div
-            key={currentSlide}
-            custom={direction}
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="absolute inset-0 p-6 md:p-12 flex flex-col justify-center items-center w-full h-full backface-hidden"
-          >
-            {slides[currentSlide].content}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {/* Footer Navigation */}
-      <footer className="absolute bottom-0 left-0 right-0 p-8 z-40 flex justify-between items-end pointer-events-none">
-        <button 
-          onClick={prevSlide}
-          disabled={currentSlide === 0}
-          className={`pointer-events-auto p-4 rounded-full transition-all duration-300 transform hover:scale-110 active:scale-95
-            ${currentSlide === 0 ? 'opacity-0 translate-y-10' : 'bg-stone-200/50 dark:bg-stone-800/50 hover:bg-stone-300 dark:hover:bg-stone-700 backdrop-blur-sm shadow-xl'}`}
-        >
-          <ArrowLeft size={32} />
-        </button>
-
-        {currentSlide !== 0 && (
-          <div className="text-center text-xs font-black uppercase tracking-[0.3em] opacity-30 pb-4">
-            {currentSlide} / {slides.length - 1}
-          </div>
-        )}
-
-        <button 
-          onClick={currentSlide === slides.length - 1 ? () => changeSlide(0) : nextSlide}
-          className="pointer-events-auto p-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-90 transition-all duration-300 group"
-        >
-          {currentSlide === slides.length - 1 ? (
-            <RefreshCcw size={40} className="group-hover:rotate-180 transition-transform duration-500" />
-          ) : (
-            <ArrowRight size={40} />
+          {currentSlide !== 0 && (
+            <div className="text-center text-xs font-black uppercase tracking-[0.3em] opacity-30 pb-4">
+              {currentSlide} / {slides.length - 1}
+            </div>
           )}
-        </button>
-      </footer>
-    </div>
+
+          <button 
+            onClick={currentSlide === slides.length - 1 ? () => changeSlide(0) : nextSlide}
+            className="pointer-events-auto p-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-90 transition-all duration-300 group"
+          >
+            {currentSlide === slides.length - 1 ? (
+              <RefreshCcw size={40} className="group-hover:rotate-180 transition-transform duration-500" />
+            ) : (
+              <ArrowRight size={40} />
+            )}
+          </button>
+        </footer>
+      </div>
+    </ScreenAdapter>
   );
 }

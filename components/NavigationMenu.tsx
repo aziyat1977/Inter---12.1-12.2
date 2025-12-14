@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Book, Clock, Shield, Users, Home, GraduationCap } from 'lucide-react';
+import { X, Book, Clock, Shield, Users, Home, GraduationCap, Ear } from 'lucide-react';
 
 interface NavigationMenuProps {
   isOpen: boolean;
@@ -15,13 +15,13 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose, onJump
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - High z-index to break out of most contexts if they were relative */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-[60]"
+            className="absolute inset-0 bg-stone-950/80 backdrop-blur-sm z-[100]"
           />
 
           {/* Drawer */}
@@ -30,7 +30,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose, onJump
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 bottom-0 w-full max-w-md bg-stone-100 dark:bg-stone-900 z-[70] shadow-2xl flex flex-col p-8 border-r border-stone-200 dark:border-stone-800"
+            className="absolute top-0 left-0 bottom-0 w-full max-w-md bg-stone-100 dark:bg-stone-900 z-[110] shadow-2xl flex flex-col p-8 border-r border-stone-200 dark:border-stone-800 h-full overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-12">
               <h2 className="text-3xl font-black text-stone-900 dark:text-white font-serif">Menu</h2>
@@ -73,7 +73,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose, onJump
               ))}
             </nav>
 
-            <div className="mt-auto pt-8 border-t border-stone-200 dark:border-stone-800 text-center">
+            <div className="mt-8 pt-8 border-t border-stone-200 dark:border-stone-800 text-center">
               <p className="text-stone-400 text-sm uppercase tracking-widest font-bold">The Unwanted Guest</p>
             </div>
           </motion.div>
