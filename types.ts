@@ -33,6 +33,16 @@ export interface RoleItem {
   iconType: 'sales' | 'host' | 'spy';
 }
 
+export interface GrammarExampleItem {
+  direct: string;
+  reported: string;
+}
+
+export interface GrammarRuleItem {
+  rule: string;
+  examples: GrammarExampleItem[];
+}
+
 export interface StageProps {
   isActive: boolean;
   onComplete?: () => void;

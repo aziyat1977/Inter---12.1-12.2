@@ -1,4 +1,4 @@
-import { VocabItem, PoliceItem, RoleItem, GossipItem } from './types';
+import { VocabItem, PoliceItem, RoleItem, GossipItem, GrammarRuleItem } from './types';
 
 export const VOCAB_DATA: VocabItem[] = [
   { 
@@ -70,6 +70,33 @@ export const VOCAB_DATA: VocabItem[] = [
       "Do you use any clever apps to help you learn languages?"
     ]
   },
+];
+
+export const GRAMMAR_RULES: GrammarRuleItem[] = [
+  {
+    rule: "Present Simple → Past Simple",
+    examples: [
+      { direct: "I like tea.", reported: "He said he liked tea." },
+      { direct: "We live in a hole.", reported: "He said they lived in a hole." },
+      { direct: "She hates loud noises.", reported: "He said she hated loud noises." }
+    ]
+  },
+  {
+    rule: "Present Continuous → Past Continuous",
+    examples: [
+      { direct: "I am reading a map.", reported: "He said he was reading a map." },
+      { direct: "They are cooking dinner.", reported: "He said they were cooking dinner." },
+      { direct: "It is raining outside.", reported: "He said it was raining outside." }
+    ]
+  },
+  {
+    rule: "Will → Would",
+    examples: [
+      { direct: "I will help you.", reported: "He said he would help me." },
+      { direct: "It will be dangerous.", reported: "He said it would be dangerous." },
+      { direct: "They will arrive soon.", reported: "He said they would arrive soon." }
+    ]
+  }
 ];
 
 export const GOSSIP_DATA: GossipItem[] = [

@@ -7,11 +7,11 @@ import LandingPage from './components/LandingPage';
 import NavigationMenu from './components/NavigationMenu';
 
 import { LeadInIntro, VocabCard, VocabQuiz, SpeakingPrompt } from './components/StageLeadIn';
-import { RuleIntro, TimelineView, MistakeView } from './components/StageTimeMachine';
+import { RuleIntro, TimelineView, MistakeView, GrammarRuleTitle, GrammarExample } from './components/StageTimeMachine';
 import { PoliceIntro, PoliceQuestion } from './components/StagePolice';
 import { RoleplayIntro, RoleCard, TeacherTip } from './components/StageRoleplay';
 
-import { VOCAB_DATA, POLICE_DATA, ROLES } from './constants';
+import { VOCAB_DATA, POLICE_DATA, ROLES, GRAMMAR_RULES } from './constants';
 
 // --- ANIMATION VARIANTS (200% Impact) ---
 const pageVariants = {
@@ -94,14 +94,25 @@ export default function App() {
     { id: `vocab-speak-${i}-3`, content: wrap(<SpeakingPrompt question={item.speakingQuestions[2]} />) },
   ]);
 
+  // Generate Grammar Rule Slides (Title -> Ex1 -> Ex2 -> Ex3)
+  const grammarSlides = GRAMMAR_RULES.flatMap((rule, i) => [
+    { id: `rule-title-${i}`, content: wrap(<GrammarRuleTitle rule={rule.rule} />) },
+    ...rule.examples.map((ex, j) => ({
+      id: `rule-ex-${i}-${j}`,
+      content: wrap(<GrammarExample example={ex} />)
+    }))
+  ]);
+
+  // Combine all slides
   const slides = [
     { id: 'landing', content: <LandingPage /> }, // 0
     { id: 'leadin-intro', content: wrap(<LeadInIntro />) }, // 1
-    ...vocabSlides, // 2 to 19 (3 words * 6 slides each = 18 slides)
+    ...vocabSlides, // 2-19
     { id: 'rules-intro', content: wrap(<RuleIntro />) }, // 20
     { id: 'rules-timeline', content: wrap(<TimelineView />) }, // 21
     { id: 'rules-mistake', content: wrap(<MistakeView />) }, // 22
-    { id: 'police-intro', content: wrap(<PoliceIntro />) }, // 23
+    ...grammarSlides, // 23 - 34 (3 rules * 4 slides each = 12 slides)
+    { id: 'police-intro', content: wrap(<PoliceIntro />) }, // 35
     ...POLICE_DATA.map((item, i) => ({
       id: `police-${i}`,
       content: wrap(
@@ -112,20 +123,19 @@ export default function App() {
         />
       )
     })),
-    { id: 'role-intro', content: wrap(<RoleplayIntro />) }, // 30
+    { id: 'role-intro', content: wrap(<RoleplayIntro />) }, // 42
     ...ROLES.map((role, i) => ({ id: `role-${i}`, content: wrap(<RoleCard role={role} />) })),
     { id: 'role-tip', content: wrap(<TeacherTip />) }
   ];
 
   // --- MENU SECTIONS ---
-  // Recalculated indices based on the expanded vocab section
   const sections = [
     { title: 'Home', index: 0, icon: <Home size={24} /> },
     { title: 'Lead In', index: 1, icon: <BookOpen size={24} /> },
     { title: 'Vocabulary', index: 2, icon: <BookOpen size={24} /> },
     { title: 'The Rules', index: 20, icon: <Clock size={24} /> },
-    { title: 'Police Report', index: 23, icon: <Shield size={24} /> },
-    { title: 'Roleplay', index: 30, icon: <Users size={24} /> },
+    { title: 'Police Report', index: 35, icon: <Shield size={24} /> },
+    { title: 'Roleplay', index: 42, icon: <Users size={24} /> },
   ];
 
   const changeSlide = (newIndex: number) => {
