@@ -1,3 +1,4 @@
+
 import { VocabItem, PoliceItem, RoleItem, GossipItem, GrammarRuleItem, QuizCategory } from './types';
 
 export const VOCAB_DATA: VocabItem[] = [
@@ -6,15 +7,19 @@ export const VOCAB_DATA: VocabItem[] = [
     synonym: "Unpleasant", 
     context: "Bilbo hates adventures.",
     pronunciation: "/ˈnɑː.sti/",
+    translations: {
+      ru: "Неприятный, противный, злобный. (Контекст: Бильбо считает приключения ужасными).",
+      uz: "Yoqimsiz, jirkanch, yomon. (Kontekst: Bilbo sarguzashtlarni yomon ko'radi)."
+    },
     quizzes: [
       {
         question: "Don't read the comments on that viral TikTok video. People are being really ___.",
-        options: ["Clever", "Nasty", "Amusing"],
+        options: ["Clever", "Nasty", "Amusing", "Polite"],
         answer: "Nasty"
       },
       {
         question: "I checked my bank account and saw I lost $500. It was a ___ surprise.",
-        options: ["Nasty", "Clever", "Funny"],
+        options: ["Nasty", "Clever", "Funny", "Sweet"],
         answer: "Nasty"
       }
     ],
@@ -29,15 +34,19 @@ export const VOCAB_DATA: VocabItem[] = [
     synonym: "Funny / Entertaining", 
     context: "Gandalf finds Bilbo funny.",
     pronunciation: "/əˈmjuː.zɪŋ/",
+    translations: {
+      ru: "Забавный, занимательный, смешной.",
+      uz: "Qiziqarli, kulgili, ko'ngil ochar."
+    },
     quizzes: [
       {
         question: "That streamer's reaction to losing the game was highly ___.",
-        options: ["Nasty", "Amusing", "Sad"],
+        options: ["Nasty", "Amusing", "Sad", "Boring"],
         answer: "Amusing"
       },
       {
         question: "My English teacher made an ___ mistake during the live class.",
-        options: ["Expensive", "Amusing", "Digital"],
+        options: ["Expensive", "Amusing", "Digital", "Serious"],
         answer: "Amusing"
       }
     ],
@@ -52,15 +61,19 @@ export const VOCAB_DATA: VocabItem[] = [
     synonym: "Smart / Intelligent", 
     context: "Wizards are very clever.",
     pronunciation: "/ˈklev.ər/",
+    translations: {
+      ru: "Умный, сообразительный, хитрый.",
+      uz: "Aqlli, ziyrak, uddaburon."
+    },
     quizzes: [
       {
         question: "She used a ___ trick to get 10k followers in one week.",
-        options: ["Nasty", "Clever", "Boring"],
+        options: ["Nasty", "Clever", "Boring", "Slow"],
         answer: "Clever"
       },
       {
         question: "Investing in that skin for the game wasn't very ___. You can't sell it back.",
-        options: ["Clever", "Amusing", "Loud"],
+        options: ["Clever", "Amusing", "Loud", "Fast"],
         answer: "Clever"
       }
     ],
@@ -75,6 +88,10 @@ export const VOCAB_DATA: VocabItem[] = [
 export const GRAMMAR_RULES: GrammarRuleItem[] = [
   {
     rule: "Present Simple → Past Simple",
+    translations: {
+      ru: "Если слова автора в прошлом (said), Present Simple в косвенной речи меняется на Past Simple.",
+      uz: "Agar muallif gapi o'tgan zamonda bo'lsa (said), ko'chirma gapdagi Present Simple Past Simple ga o'zgaradi."
+    },
     examples: [
       { direct: "I like tea.", reported: "He said he liked tea." },
       { direct: "We live in a hole.", reported: "He said they lived in a hole." },
@@ -83,6 +100,10 @@ export const GRAMMAR_RULES: GrammarRuleItem[] = [
   },
   {
     rule: "Present Continuous → Past Continuous",
+    translations: {
+      ru: "Действие, происходящее сейчас (am/is/are doing), в рассказе о прошлом становится процессом в прошлом (was/were doing).",
+      uz: "Hozir sodir bo'layotgan ish-harakat (am/is/are doing) o'zlashtirma gapda o'tgan zamonga (was/were doing) aylanadi."
+    },
     examples: [
       { direct: "I am reading a map.", reported: "He said he was reading a map." },
       { direct: "They are cooking dinner.", reported: "He said they were cooking dinner." },
@@ -91,6 +112,10 @@ export const GRAMMAR_RULES: GrammarRuleItem[] = [
   },
   {
     rule: "Will → Would",
+    translations: {
+      ru: "Будущее время (Will) с точки зрения прошлого становится 'Будущим в прошедшем' (Would).",
+      uz: "Kelajak zamon (Will) o'tgan zamon nuqtai nazaridan 'O'tgan zamondagi kelajak' (Would) shakliga o'tadi."
+    },
     examples: [
       { direct: "I will help you.", reported: "He said he would help me." },
       { direct: "It will be dangerous.", reported: "He said it would be dangerous." },

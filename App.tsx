@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Menu, Home, BookOpen, Clock, Shield, Users, RefreshCcw, GraduationCap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Menu, Home, BookOpen, Clock, Shield, Users, RefreshCcw, GraduationCap, Ear } from 'lucide-react';
 import ThemeToggle from './components/ThemeToggle';
 import ProgressBar from './components/ProgressBar';
 import LandingPage from './components/LandingPage';
 import NavigationMenu from './components/NavigationMenu';
 
 import { LeadInIntro, VocabCard, VocabQuiz, SpeakingPrompt } from './components/StageLeadIn';
-import { RuleIntro, TimelineView, MistakeView, GrammarRuleTitle, GrammarExample } from './components/StageTimeMachine';
+import StageGossip from './components/StageGossip';
+import { RuleIntro, TimelineView, MistakeView, GrammarRuleTitle, GrammarExample, TenseShiftVisualizer } from './components/StageTimeMachine';
 import { PoliceIntro, PoliceQuestion } from './components/StagePolice';
 import { RoleplayIntro, RoleCard, TeacherTip } from './components/StageRoleplay';
 import { QuizIntro, MasterTestRunner, GapFillSession } from './components/StageQuizzes';
 
 import { VOCAB_DATA, POLICE_DATA, ROLES, GRAMMAR_RULES, QUIZ_CATEGORIES } from './constants';
 
-// --- ANIMATION VARIANTS (200% Impact) ---
+// --- ANIMATION VARIANTS ---
 const pageVariants = {
   initial: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
@@ -72,8 +73,7 @@ export default function App() {
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
-  // --- CONTENT MAPPING ---
-  // We wrap content in a motion.div to ensure internal stagger effects work
+  // Helper to wrap components in animation div
   const wrap = (Component: React.ReactNode) => (
     <motion.div 
       variants={contentVariants} 
@@ -85,7 +85,9 @@ export default function App() {
     </motion.div>
   );
 
-  // Generate Vocab Slides (Card -> Quiz 1 -> Quiz 2 -> Speaking 1 -> Speaking 2 -> Speaking 3)
+  // --- SLIDE GENERATION ---
+
+  // 1. Vocabulary
   const vocabSlides = VOCAB_DATA.flatMap((item, i) => [
     { id: `vocab-card-${i}`, content: wrap(<VocabCard item={item} />) },
     { id: `vocab-quiz-${i}-1`, content: wrap(<VocabQuiz quiz={item.quizzes[0]} />) },
@@ -95,16 +97,17 @@ export default function App() {
     { id: `vocab-speak-${i}-3`, content: wrap(<SpeakingPrompt question={item.speakingQuestions[2]} />) },
   ]);
 
-  // Generate Grammar Rule Slides (Title -> Ex1 -> Ex2 -> Ex3)
+  // 2. Grammar Rules (Analysis)
   const grammarSlides = GRAMMAR_RULES.flatMap((rule, i) => [
     { id: `rule-title-${i}`, content: wrap(<GrammarRuleTitle rule={rule.rule} />) },
+    { id: `rule-timeline-${i}`, content: wrap(<TenseShiftVisualizer rule={rule.rule} />) },
     ...rule.examples.map((ex, j) => ({
       id: `rule-ex-${i}-${j}`,
       content: wrap(<GrammarExample example={ex} />)
     }))
   ]);
 
-  // Generate Master Quiz Slides (Intro -> TestRunner -> ExA -> ExB -> ExC)
+  // 3. Master Quizzes (Controlled Practice)
   const quizSlides = QUIZ_CATEGORIES.flatMap((cat, i) => [
     { id: `quiz-intro-${i}`, content: wrap(<QuizIntro category={cat} />) },
     { id: `quiz-test-${i}`, content: wrap(<MasterTestRunner questions={cat.test} title={`${cat.title} - Test`} />) },
@@ -114,16 +117,31 @@ export default function App() {
     }))
   ]);
 
-  // Combine all slides
+  // --- ORDER OF SLIDES (LOGICAL OVERHAUL) ---
   const slides = [
-    { id: 'landing', content: <LandingPage /> }, // 0
-    { id: 'leadin-intro', content: wrap(<LeadInIntro />) }, // 1
-    ...vocabSlides, // 2-19
-    { id: 'rules-intro', content: wrap(<RuleIntro />) }, // 20
-    { id: 'rules-timeline', content: wrap(<TimelineView />) }, // 21
-    { id: 'rules-mistake', content: wrap(<MistakeView />) }, // 22
-    ...grammarSlides, // 23 - 34
-    { id: 'police-intro', content: wrap(<PoliceIntro />) }, // 35
+    // 1. Landing
+    { id: 'landing', content: <LandingPage /> }, 
+    
+    // 2. Lead In (Context)
+    { id: 'leadin-intro', content: wrap(<LeadInIntro />) }, 
+    
+    // 3. Vocabulary (Pre-teaching)
+    ...vocabSlides, 
+    
+    // 4. Exposure (The Gossip/Listening) - Reordered to be before rules
+    { id: 'gossip', content: wrap(<StageGossip />) },
+
+    // 5. Clarification (The Rules)
+    { id: 'rules-intro', content: wrap(<RuleIntro />) }, 
+    { id: 'rules-timeline', content: wrap(<TimelineView />) }, 
+    { id: 'rules-mistake', content: wrap(<MistakeView />) }, 
+    ...grammarSlides, 
+
+    // 6. Restricted Practice (Quizzes/Drills)
+    ...quizSlides,
+
+    // 7. Semi-Controlled Practice (Police Report - Writing)
+    { id: 'police-intro', content: wrap(<PoliceIntro />) }, 
     ...POLICE_DATA.map((item, i) => ({
       id: `police-${i}`,
       content: wrap(
@@ -134,21 +152,26 @@ export default function App() {
         />
       )
     })),
-    { id: 'role-intro', content: wrap(<RoleplayIntro />) }, // 42
+
+    // 8. Freer Practice (Roleplay)
+    { id: 'role-intro', content: wrap(<RoleplayIntro />) }, 
     ...ROLES.map((role, i) => ({ id: `role-${i}`, content: wrap(<RoleCard role={role} />) })),
-    { id: 'role-tip', content: wrap(<TeacherTip />) }, // 45
-    ...quizSlides // 46+
+    { id: 'role-tip', content: wrap(<TeacherTip />) }, 
   ];
 
-  // --- MENU SECTIONS ---
+  // --- MENU SECTIONS (Updated Indices) ---
+  // We need to calculate indices dynamically or hardcode based on the new order.
+  // Since arrays are dynamic, approximations or finding index by ID is safer, but for this XML response, I will map them logically.
+  
   const sections = [
     { title: 'Home', index: 0, icon: <Home size={24} /> },
     { title: 'Lead In', index: 1, icon: <BookOpen size={24} /> },
     { title: 'Vocabulary', index: 2, icon: <BookOpen size={24} /> },
-    { title: 'The Rules', index: 20, icon: <Clock size={24} /> },
-    { title: 'Police Report', index: 35, icon: <Shield size={24} /> },
-    { title: 'Roleplay', index: 42, icon: <Users size={24} /> },
-    { title: 'Master Quizzes', index: 46, icon: <GraduationCap size={24} /> },
+    { title: 'The Gossip (Listening)', index: 2 + vocabSlides.length, icon: <Ear size={24} /> },
+    { title: 'The Rules', index: 3 + vocabSlides.length, icon: <Clock size={24} /> },
+    { title: 'Practice Drills', index: 3 + vocabSlides.length + 3 + grammarSlides.length, icon: <GraduationCap size={24} /> }, // Intro+Timeline+Mistake = 3
+    { title: 'Police Report', index: slides.findIndex(s => s.id === 'police-intro'), icon: <Shield size={24} /> },
+    { title: 'Roleplay', index: slides.findIndex(s => s.id === 'role-intro'), icon: <Users size={24} /> },
   ];
 
   const changeSlide = (newIndex: number) => {

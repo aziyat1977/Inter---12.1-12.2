@@ -1,3 +1,9 @@
+
+export interface TranslationSet {
+  ru: string;
+  uz: string;
+}
+
 export interface VocabQuizItem {
   question: string;
   options: string[];
@@ -9,6 +15,7 @@ export interface VocabItem {
   synonym: string;
   context: string;
   pronunciation: string;
+  translations: TranslationSet; // Added translations
   quizzes: VocabQuizItem[];
   speakingQuestions: string[];
 }
@@ -40,6 +47,7 @@ export interface GrammarExampleItem {
 
 export interface GrammarRuleItem {
   rule: string;
+  translations: TranslationSet; // Added translations
   examples: GrammarExampleItem[];
 }
 

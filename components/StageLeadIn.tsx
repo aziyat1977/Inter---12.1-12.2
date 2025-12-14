@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Coffee, Volume2, HelpCircle, Mic, MessageCircle, CheckCircle, XCircle } from 'lucide-react';
 import { VocabItem, VocabQuizItem } from '../types';
+import TranslationReveal from './TranslationReveal';
 
 export const LeadInIntro: React.FC = () => (
   <div className="flex flex-col items-center justify-center h-full text-center space-y-12">
@@ -44,11 +46,12 @@ export const VocabCard: React.FC<{ item: VocabItem }> = ({ item }) => (
       </div>
     </div>
     
-    <div className="space-y-4">
+    <div className="space-y-4 w-full flex flex-col items-center">
       <p className="text-stone-400 dark:text-stone-500 text-xl font-bold uppercase tracking-widest">Means</p>
-      <p className="text-5xl md:text-7xl text-emerald-700 dark:text-emerald-300 font-bold">
+      <p className="text-5xl md:text-7xl text-emerald-700 dark:text-emerald-300 font-bold mb-4">
         {item.synonym}
       </p>
+      {item.translations && <TranslationReveal translations={item.translations} className="mt-2 max-w-lg" />}
     </div>
     
     <div className="pt-12 border-t border-stone-200 dark:border-stone-800 w-full max-w-3xl">
@@ -73,7 +76,7 @@ export const VocabQuiz: React.FC<{ quiz: VocabQuizItem }> = ({ quiz }) => {
       </div>
 
       <div className="p-8 md:p-12 bg-stone-100 dark:bg-stone-800 rounded-[3rem] shadow-xl">
-        <p className="text-4xl md:text-6xl text-stone-800 dark:text-stone-200 font-serif leading-tight">
+        <p className="text-3xl md:text-5xl text-stone-800 dark:text-stone-200 font-serif leading-tight">
           {parts[0]}
           <span className={`inline-block px-8 py-2 mx-2 rounded-xl border-b-4 transition-all duration-500
             ${selected 
@@ -86,12 +89,12 @@ export const VocabQuiz: React.FC<{ quiz: VocabQuizItem }> = ({ quiz }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-4xl">
         {quiz.options.map((opt) => (
           <button
             key={opt}
             onClick={() => setSelected(opt)}
-            className={`p-6 text-3xl font-bold rounded-2xl border-4 transition-all duration-300 transform active:scale-95
+            className={`p-6 text-2xl md:text-3xl font-bold rounded-2xl border-4 transition-all duration-300 transform active:scale-95
               ${selected === opt 
                 ? (opt === quiz.answer 
                     ? 'bg-emerald-600 text-white border-emerald-800 scale-105' 

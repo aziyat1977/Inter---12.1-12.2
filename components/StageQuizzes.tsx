@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, XCircle, ArrowRight, BookOpen, Brain, PenTool, Check, X } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowRight, BookOpen, Brain, Move } from 'lucide-react';
 import { QuizCategory, MasterTestQuestion, GapFillItem } from '../types';
 
 export const QuizIntro: React.FC<{ category: QuizCategory }> = ({ category }) => (
@@ -152,61 +152,134 @@ export const MasterTestRunner: React.FC<{ questions: MasterTestQuestion[], title
 };
 
 export const GapFillSession: React.FC<{ title: string, items: GapFillItem[] }> = ({ title, items }) => {
-  const [inputs, setInputs] = useState<Record<number, string>>({});
+  const [bank, setBank] = useState<string[]>([]);
+  const [assignments, setAssignments] = useState<Record<number, string>>({});
   const [results, setResults] = useState<Record<number, boolean | null>>({});
 
-  const check = (idx: number) => {
-    const correct = items[idx].answer.toLowerCase().replace(/\s+/g, ' ').trim();
-    const userVal = (inputs[idx] || "").toLowerCase().replace(/\s+/g, ' ').trim();
-    setResults(prev => ({ ...prev, [idx]: userVal === correct }));
+  useEffect(() => {
+    // Collect all answers and shuffle them for the word bank
+    const words = items.map(item => item.answer);
+    // Simple shuffle
+    const shuffled = [...words].sort(() => Math.random() - 0.5);
+    setBank(shuffled);
+    setAssignments({});
+    setResults({});
+  }, [items]);
+
+  const handleDragStart = (e: React.DragEvent, word: string) => {
+    e.dataTransfer.setData('text/plain', word);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    const word = e.dataTransfer.getData('text/plain');
+    if (word) {
+      setAssignments(prev => ({ ...prev, [index]: word }));
+      
+      // Check immediately
+      const correct = items[index].answer;
+      const isCorrect = word.toLowerCase().trim() === correct.toLowerCase().trim();
+      setResults(prev => ({ ...prev, [index]: isCorrect }));
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const returnToBank = (index: number) => {
+    setAssignments(prev => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
+    setResults(prev => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-5xl mx-auto space-y-8">
-       <div className="flex items-center gap-4 text-emerald-600 dark:text-emerald-400 opacity-80 mb-4">
-        <PenTool size={32} />
-        <span className="text-xl font-bold uppercase tracking-widest">{title}</span>
+    <div className="flex flex-col h-full w-full max-w-6xl mx-auto space-y-8">
+       <div className="flex items-center gap-4 text-emerald-600 dark:text-emerald-400 opacity-80 mb-2">
+        <Move size={32} />
+        <span className="text-xl font-bold uppercase tracking-widest">{title} (Drag & Drop)</span>
       </div>
 
-      <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-4">
-        {items.map((item, i) => (
-          <div key={i} className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col md:flex-row md:items-center gap-4">
-             <div className="md:w-1/3 text-stone-500 dark:text-stone-400 text-sm font-serif italic border-l-4 border-stone-300 pl-3">
-               "{item.direct}"
-             </div>
-             
-             <div className="flex-1 flex flex-wrap items-center gap-2 text-lg md:text-xl font-medium text-stone-800 dark:text-stone-200">
-               <span>{item.start}</span>
-               
-               <div className="relative group">
-                 <input 
-                    type="text" 
-                    value={inputs[i] || ""}
-                    onChange={(e) => {
-                      setInputs(prev => ({...prev, [i]: e.target.value}));
-                      setResults(prev => ({...prev, [i]: null}));
-                    }}
-                    onBlur={() => check(i)}
-                    onKeyDown={(e) => e.key === 'Enter' && check(i)}
-                    className={`min-w-[120px] max-w-[200px] border-b-2 bg-transparent text-center px-1 font-bold outline-none transition-colors
-                      ${results[i] === true 
-                        ? 'border-emerald-500 text-emerald-600' 
-                        : results[i] === false 
-                          ? 'border-red-500 text-red-600' 
-                          : 'border-stone-300 dark:border-stone-600 focus:border-emerald-500'}`}
-                 />
-                  {results[i] === true && <div className="absolute -right-6 top-1 text-emerald-500"><Check size={20}/></div>}
-                  {results[i] === false && (
-                    <div className="absolute z-10 top-full left-0 mt-2 bg-red-100 text-red-800 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                      Answer: {item.answer}
-                    </div>
-                  )}
-               </div>
+      {/* Word Bank */}
+      <div className="bg-stone-200 dark:bg-stone-800 p-6 rounded-2xl shadow-inner min-h-[100px] flex flex-wrap gap-3 items-center justify-center border-2 border-stone-300 dark:border-stone-700 border-dashed">
+        {bank.map((word, i) => {
+          // Check if word is already assigned anywhere
+          const isAssigned = Object.values(assignments).includes(word);
+          
+          return (
+            <div
+              key={`${word}-${i}`}
+              draggable={!isAssigned}
+              onDragStart={(e) => handleDragStart(e, word)}
+              className={`px-6 py-2 rounded-full font-bold shadow-sm transition-all duration-200
+                ${isAssigned 
+                  ? 'bg-stone-300 dark:bg-stone-700 text-stone-400 dark:text-stone-600 opacity-50 cursor-not-allowed' 
+                  : 'bg-white dark:bg-stone-600 text-stone-900 dark:text-white cursor-grab hover:scale-105 active:cursor-grabbing hover:shadow-md'
+                }`}
+            >
+              {word}
+            </div>
+          );
+        })}
+        {bank.length === 0 && <span className="text-stone-400">Loading words...</span>}
+      </div>
 
-               <span>{item.end || "."}</span>
-             </div>
-          </div>
-        ))}
+      <div className="space-y-4 overflow-y-auto max-h-[55vh] pr-2">
+        {items.map((item, i) => {
+          const assignedWord = assignments[i];
+          const result = results[i];
+
+          return (
+            <div key={i} className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col md:flex-row items-center gap-4">
+               <div className="md:w-1/3 text-stone-500 dark:text-stone-400 text-sm font-serif italic border-l-4 border-stone-300 pl-3">
+                 "{item.direct}"
+               </div>
+               
+               <div className="flex-1 flex flex-wrap items-center gap-3 text-lg md:text-xl font-medium text-stone-800 dark:text-stone-200">
+                 <span>{item.start}</span>
+                 
+                 <div 
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, i)}
+                    onClick={() => assignedWord && returnToBank(i)}
+                    className={`min-w-[140px] h-12 flex items-center justify-center px-4 rounded-lg border-b-4 transition-all
+                      ${assignedWord 
+                        ? (result === true 
+                            ? 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-500 text-emerald-700 dark:text-emerald-300 cursor-pointer hover:opacity-80' 
+                            : 'bg-red-100 dark:bg-red-900/40 border-red-500 text-red-700 dark:text-red-300 cursor-pointer hover:opacity-80')
+                        : 'bg-stone-50 dark:bg-stone-800 border-stone-300 dark:border-stone-600 border-dashed'
+                      }
+                    `}
+                 >
+                   {assignedWord || <span className="text-stone-400 text-sm font-normal">Drag here</span>}
+                 </div>
+
+                 {item.end && <span>{item.end}</span>}
+
+                  <AnimatePresence>
+                    {result === false && (
+                         <motion.span 
+                            initial={{ opacity: 0, x: -10 }} 
+                            animate={{ opacity: 1, x: 0 }}
+                            className="text-sm text-red-500 font-bold ml-2"
+                         >
+                            (Try again)
+                         </motion.span>
+                    )}
+                  </AnimatePresence>
+               </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
