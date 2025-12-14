@@ -1,9 +1,75 @@
 import { VocabItem, PoliceItem, RoleItem, GossipItem } from './types';
 
 export const VOCAB_DATA: VocabItem[] = [
-  { word: "Nasty", synonym: "Unpleasant", context: "Bilbo hates adventures." },
-  { word: "Amusing", synonym: "Funny", context: "Gandalf finds Bilbo funny." },
-  { word: "Clever", synonym: "Smart", context: "Wizards are very clever." },
+  { 
+    word: "Nasty", 
+    synonym: "Unpleasant", 
+    context: "Bilbo hates adventures.",
+    pronunciation: "/ˈnɑː.sti/",
+    quizzes: [
+      {
+        question: "Don't read the comments on that viral TikTok video. People are being really ___.",
+        options: ["Clever", "Nasty", "Amusing"],
+        answer: "Nasty"
+      },
+      {
+        question: "I checked my bank account and saw I lost $500. It was a ___ surprise.",
+        options: ["Nasty", "Clever", "Funny"],
+        answer: "Nasty"
+      }
+    ],
+    speakingQuestions: [
+      "Have you ever received a nasty comment on social media? How did you react?",
+      "What is a nasty habit that costs people a lot of money?",
+      "Is it nasty to show off your money on Instagram, or is it normal?"
+    ]
+  },
+  { 
+    word: "Amusing", 
+    synonym: "Funny / Entertaining", 
+    context: "Gandalf finds Bilbo funny.",
+    pronunciation: "/əˈmjuː.zɪŋ/",
+    quizzes: [
+      {
+        question: "That streamer's reaction to losing the game was highly ___.",
+        options: ["Nasty", "Amusing", "Sad"],
+        answer: "Amusing"
+      },
+      {
+        question: "My English teacher made an ___ mistake during the live class.",
+        options: ["Expensive", "Amusing", "Digital"],
+        answer: "Amusing"
+      }
+    ],
+    speakingQuestions: [
+      "What do you find more amusing: TikTok trends or YouTube gamers?",
+      "Tell us about an amusing misunderstanding you had in English.",
+      "Do you think pranks on friends are amusing or just mean?"
+    ]
+  },
+  { 
+    word: "Clever", 
+    synonym: "Smart / Intelligent", 
+    context: "Wizards are very clever.",
+    pronunciation: "/ˈklev.ər/",
+    quizzes: [
+      {
+        question: "She used a ___ trick to get 10k followers in one week.",
+        options: ["Nasty", "Clever", "Boring"],
+        answer: "Clever"
+      },
+      {
+        question: "Investing in that skin for the game wasn't very ___. You can't sell it back.",
+        options: ["Clever", "Amusing", "Loud"],
+        answer: "Clever"
+      }
+    ],
+    speakingQuestions: [
+      "What is a clever way to save money while having fun?",
+      "Who is the cleverest content creator you follow?",
+      "Do you use any clever apps to help you learn languages?"
+    ]
+  },
 ];
 
 export const GOSSIP_DATA: GossipItem[] = [

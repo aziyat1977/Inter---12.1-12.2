@@ -1,7 +1,16 @@
+export interface VocabQuizItem {
+  question: string;
+  options: string[];
+  answer: string;
+}
+
 export interface VocabItem {
   word: string;
   synonym: string;
   context: string;
+  pronunciation: string;
+  quizzes: VocabQuizItem[];
+  speakingQuestions: string[];
 }
 
 export interface GossipItem {
